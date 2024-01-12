@@ -2,6 +2,8 @@ function validateForm() {
     // Validation logic
     let fullName = document.getElementById('fullName').value;
     let email = document.getElementById('email').value;
+    let password = document.getElementById('password').value;
+    let confirmPassword = document.getElementById('confirm-password').value;
     let phoneNumber = document.getElementById('phoneNumber').value;
     let birthDate = document.getElementById('birthDate').value;
     let gender = document.querySelector('input[name="gender"]:checked').value;
@@ -17,12 +19,16 @@ function validateForm() {
     let emailError = document.getElementById('emailError');
     let phoneNumberError = document.getElementById('phoneNumberError');
     let birthDateError = document.getElementById('birthDateError');
+    let passwordError = document.getElementById('passwordError');
+    let confirmPasswordError = document.getElementById('confirmPasswordError');
   
     // Reset error messages
     fullNameError.textContent = '';
     emailError.textContent = '';
     phoneNumberError.textContent = '';
     birthDateError.textContent = '';
+    passwordError.textContent = '';
+    confirmPasswordError.textContent = '';
   
     // Check individual validations and display error messages
     if (fullName.trim() === '') {
