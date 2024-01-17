@@ -1,0 +1,348 @@
+[cloudera@quickstart Desktop]$ hbase shell
+2024-01-16 22:33:53,868 INFO  [main] Configuration.deprecation: hadoop.native.lib is deprecated. Instead, use io.native.lib.available
+HBase Shell; enter 'help<RETURN>' for list of supported commands.
+Type "exit<RETURN>" to leave the HBase Shell
+Version 1.0.0-cdh5.4.2, rUnknown, Tue May 19 17:07:29 PDT 2015
+
+hbase(main):001:0> help 'create'
+Creates a table. Pass a table name, and a set of column family
+specifications (at least one), and, optionally, table configuration.
+Column specification can be a simple string (name), or a dictionary
+(dictionaries are described below in main help output), necessarily 
+including NAME attribute. 
+Examples:
+
+Create a table with namespace=ns1 and table qualifier=t1
+  hbase> create 'ns1:t1', {NAME => 'f1', VERSIONS => 5}
+
+Create a table with namespace=default and table qualifier=t1
+  hbase> create 't1', {NAME => 'f1'}, {NAME => 'f2'}, {NAME => 'f3'}
+  hbase> # The above in shorthand would be the following:
+  hbase> create 't1', 'f1', 'f2', 'f3'
+  hbase> create 't1', {NAME => 'f1', VERSIONS => 1, TTL => 2592000, BLOCKCACHE => true}
+  hbase> create 't1', {NAME => 'f1', CONFIGURATION => {'hbase.hstore.blockingStoreFiles' => '10'}}
+  
+Table configuration options can be put at the end.
+Examples:
+
+  hbase> create 'ns1:t1', 'f1', SPLITS => ['10', '20', '30', '40']
+  hbase> create 't1', 'f1', SPLITS => ['10', '20', '30', '40']
+  hbase> create 't1', 'f1', SPLITS_FILE => 'splits.txt', OWNER => 'johndoe'
+  hbase> create 't1', {NAME => 'f1', VERSIONS => 5}, METADATA => { 'mykey' => 'myvalue' }
+  hbase> # Optionally pre-split the table into NUMREGIONS, using
+  hbase> # SPLITALGO ("HexStringSplit", "UniformSplit" or classname)
+  hbase> create 't1', 'f1', {NUMREGIONS => 15, SPLITALGO => 'HexStringSplit'}
+  hbase> create 't1', 'f1', {NUMREGIONS => 15, SPLITALGO => 'HexStringSplit', REGION_REPLICATION => 2, CONFIGURATION => {'hbase.hregion.scan.loadColumnFamiliesOnDemand' => 'true'}}
+
+You can also keep around a reference to the created table:
+
+  hbase> t1 = create 't1', 'f1'
+
+Which gives you a reference to the table named 't1', on which you can then
+call methods.
+hbase(main):002:0> create 'flight','finfo','fsch'
+0 row(s) in 0.7820 seconds
+
+=> Hbase::Table - flight
+hbase(main):003:0> list
+TABLE                                                                           
+flight                                                                          
+1 row(s) in 0.0240 seconds
+
+=> ["flight"]
+hbase(main):004:0> put 'flight',1,'finfo:source','pune'
+0 row(s) in 0.1810 seconds
+
+hbase(main):005:0> put 'flight',1,'finfo:dest','mumbai'
+0 row(s) in 0.0040 seconds
+
+hbase(main):006:0> put 'flight',1,'fsh:at','10.25a.m'
+
+ERROR: Unknown column family! Valid column names: finfo:*, fsch:*
+
+Here is some help for this command:
+Put a cell 'value' at specified table/row/column and optionally
+timestamp coordinates.  To put a cell value into table 'ns1:t1' or 't1'
+at row 'r1' under column 'c1' marked with the time 'ts1', do:
+
+  hbase> put 'ns1:t1', 'r1', 'c1', 'value'
+  hbase> put 't1', 'r1', 'c1', 'value'
+  hbase> put 't1', 'r1', 'c1', 'value', ts1
+  hbase> put 't1', 'r1', 'c1', 'value', {ATTRIBUTES=>{'mykey'=>'myvalue'}}
+  hbase> put 't1', 'r1', 'c1', 'value', ts1, {ATTRIBUTES=>{'mykey'=>'myvalue'}}
+  hbase> put 't1', 'r1', 'c1', 'value', ts1, {VISIBILITY=>'PRIVATE|SECRET'}
+
+The same commands also can be run on a table reference. Suppose you had a reference
+t to table 't1', the corresponding command would be:
+
+  hbase> t.put 'r1', 'c1', 'value', ts1, {ATTRIBUTES=>{'mykey'=>'myvalue'}}
+
+
+hbase(main):007:0> put 'flight',1,'fsch:at','10.25a.m'
+0 row(s) in 0.0070 seconds
+
+hbase(main):008:0> put 'flight',1,'fsch:dt','11.25a.m'
+0 row(s) in 0.0050 seconds
+
+hbase(main):009:0> put 'flight',1,'fsch:delay','5min'
+0 row(s) in 0.0100 seconds
+
+hbase(main):010:0> put 'flight',1,'finfo:source','nashik'
+0 row(s) in 0.0060 seconds
+
+hbase(main):011:0> put 'flight',1,'finfo:dest','pune'
+0 row(s) in 0.0060 seconds
+
+hbase(main):012:0> put 'flight',1,'fsh:at','1p.m'
+
+ERROR: Unknown column family! Valid column names: finfo:*, fsch:*
+
+Here is some help for this command:
+Put a cell 'value' at specified table/row/column and optionally
+timestamp coordinates.  To put a cell value into table 'ns1:t1' or 't1'
+at row 'r1' under column 'c1' marked with the time 'ts1', do:
+
+  hbase> put 'ns1:t1', 'r1', 'c1', 'value'
+  hbase> put 't1', 'r1', 'c1', 'value'
+  hbase> put 't1', 'r1', 'c1', 'value', ts1
+  hbase> put 't1', 'r1', 'c1', 'value', {ATTRIBUTES=>{'mykey'=>'myvalue'}}
+  hbase> put 't1', 'r1', 'c1', 'value', ts1, {ATTRIBUTES=>{'mykey'=>'myvalue'}}
+  hbase> put 't1', 'r1', 'c1', 'value', ts1, {VISIBILITY=>'PRIVATE|SECRET'}
+
+The same commands also can be run on a table reference. Suppose you had a reference
+t to table 't1', the corresponding command would be:
+
+  hbase> t.put 'r1', 'c1', 'value', ts1, {ATTRIBUTES=>{'mykey'=>'myvalue'}}
+
+
+hbase(main):013:0> put 'flight',1,'fsch:at','11.00a.m'
+0 row(s) in 0.0100 seconds
+
+hbase(main):014:0> put 'flight',1,'fsch:dt','12.25a.m'
+0 row(s) in 0.0140 seconds
+
+hbase(main):015:0> put 'flight',2,'finfo:source','new york'
+0 row(s) in 0.0090 seconds
+
+hbase(main):016:0> put 'flight',2,'finfo:dest', 'los angeles'
+0 row(s) in 0.0040 seconds
+
+hbase(main):017:0> put 'flight',2,'fsch:at','9.00a.m'
+0 row(s) in 0.0040 seconds
+
+hbase(main):018:0> put 'flight',2,'fsch:dt','12.45p.m'
+0 row(s) in 0.0060 seconds
+
+hbase(main):019:0> put 'flight',2,'fsch:delay','10min'
+0 row(s) in 0.0200 seconds
+
+hbase(main):020:0> put 'flight',3,'finfo:source','london'
+0 row(s) in 0.0100 seconds
+
+hbase(main):021:0> put 'flight',3,'finfo:dest', 'paris'
+0 row(s) in 0.0060 seconds
+
+hbase(main):022:0> put 'flight',3,'fsch:at','2.30p.m'
+0 row(s) in 0.0040 seconds
+
+hbase(main):023:0> put 'flight',3,'fsch:dt','4.15p.m'
+0 row(s) in 0.0050 seconds
+
+hbase(main):024:0> put 'flight',3,'fsch:delay','2min'
+0 row(s) in 0.0050 seconds
+
+hbase(main):025:0> put 'flight',4,'finfo:source','tokyo'
+0 row(s) in 0.0080 seconds
+
+hbase(main):026:0> put 'flight',4,'finfo:dest', 'beijing'
+0 row(s) in 0.0060 seconds
+
+hbase(main):027:0> put 'flight',4,'fsch:at','8.45a.m'
+0 row(s) in 0.0050 seconds
+
+hbase(main):028:0> put 'flight',4,'fsch:dt','10.30a.m'
+0 row(s) in 0.0060 seconds
+
+hbase(main):029:0> put 'flight',4,'fsch:delay','15min'
+0 row(s) in 0.0030 seconds
+
+hbase(main):030:0> put 'flight',5,'finfo:source','dubai'
+0 row(s) in 0.0090 seconds
+
+hbase(main):031:0> put 'flight',5,'finfo:dest', 'istanbul'
+0 row(s) in 0.0040 seconds
+
+hbase(main):032:0> put 'flight',5,'fsch:at','5.15p.m'
+0 row(s) in 0.0060 seconds
+
+hbase(main):033:0> put 'flight',5,'fsch:dt','7.00p.m'
+0 row(s) in 0.0040 seconds
+
+hbase(main):034:0> put 'flight',5,'fsch:delay','8min'
+0 row(s) in 0.0040 seconds
+
+hbase(main):035:0> scan 'flight'
+ROW                   COLUMN+CELL                                               
+ 1                    column=finfo:dest, timestamp=1705473751059, value=pune    
+ 1                    column=finfo:source, timestamp=1705473742664, value=nashik
+ 1                    column=fsch:at, timestamp=1705473799668, value=11.00a.m   
+ 1                    column=fsch:delay, timestamp=1705473707175, value=5min    
+ 1                    column=fsch:dt, timestamp=1705473829128, value=12.25a.m   
+ 2                    column=finfo:dest, timestamp=1705474425137, value=los ange
+                      les                                                       
+ 2                    column=finfo:source, timestamp=1705474425111, value=new yo
+                      rk                                                        
+ 2                    column=fsch:at, timestamp=1705474425172, value=9.00a.m    
+ 2                    column=fsch:delay, timestamp=1705474425238, value=10min   
+ 2                    column=fsch:dt, timestamp=1705474425193, value=12.45p.m   
+ 3                    column=finfo:dest, timestamp=1705474437408, value=paris   
+ 3                    column=finfo:source, timestamp=1705474437379, value=london
+ 3                    column=fsch:at, timestamp=1705474437425, value=2.30p.m    
+ 3                    column=fsch:delay, timestamp=1705474437476, value=2min    
+ 3                    column=fsch:dt, timestamp=1705474437444, value=4.15p.m    
+ 4                    column=finfo:dest, timestamp=1705474448081, value=beijing 
+ 4                    column=finfo:source, timestamp=1705474448056, value=tokyo 
+ 4                    column=fsch:at, timestamp=1705474448103, value=8.45a.m    
+ 4                    column=fsch:delay, timestamp=1705474448141, value=15min   
+ 4                    column=fsch:dt, timestamp=1705474448121, value=10.30a.m   
+ 5                    column=finfo:dest, timestamp=1705474454923, value=istanbul
+ 5                    column=finfo:source, timestamp=1705474454899, value=dubai 
+ 5                    column=fsch:at, timestamp=1705474454941, value=5.15p.m    
+ 5                    column=fsch:delay, timestamp=1705474454978, value=8min    
+ 5                    column=fsch:dt, timestamp=1705474454959, value=7.00p.m    
+5 row(s) in 0.0850 seconds
+
+hbase(main):036:0> alter 'flight', NAME=>'revenue'
+Updating all regions with the new schema...
+0/1 regions updated.
+1/1 regions updated.
+Done.
+0 row(s) in 2.2830 seconds
+
+hbase(main):037:0> alter 'flight',NAME=>'revenue',METHOD=>'delete'
+Updating all regions with the new schema...
+0/1 regions updated.
+1/1 regions updated.
+Done.
+0 row(s) in 2.2410 seconds
+
+hbase(main):038:0> scan 'flight'
+ROW                   COLUMN+CELL                                               
+ 1                    column=finfo:dest, timestamp=1705473751059, value=pune    
+ 1                    column=finfo:source, timestamp=1705473742664, value=nashik
+ 1                    column=fsch:at, timestamp=1705473799668, value=11.00a.m   
+ 1                    column=fsch:delay, timestamp=1705473707175, value=5min    
+ 1                    column=fsch:dt, timestamp=1705473829128, value=12.25a.m   
+ 2                    column=finfo:dest, timestamp=1705474425137, value=los ange
+                      les                                                       
+ 2                    column=finfo:source, timestamp=1705474425111, value=new yo
+                      rk                                                        
+ 2                    column=fsch:at, timestamp=1705474425172, value=9.00a.m    
+ 2                    column=fsch:delay, timestamp=1705474425238, value=10min   
+ 2                    column=fsch:dt, timestamp=1705474425193, value=12.45p.m   
+ 3                    column=finfo:dest, timestamp=1705474437408, value=paris   
+ 3                    column=finfo:source, timestamp=1705474437379, value=london
+ 3                    column=fsch:at, timestamp=1705474437425, value=2.30p.m    
+ 3                    column=fsch:delay, timestamp=1705474437476, value=2min    
+ 3                    column=fsch:dt, timestamp=1705474437444, value=4.15p.m    
+ 4                    column=finfo:dest, timestamp=1705474448081, value=beijing 
+ 4                    column=finfo:source, timestamp=1705474448056, value=tokyo 
+ 4                    column=fsch:at, timestamp=1705474448103, value=8.45a.m    
+ 4                    column=fsch:delay, timestamp=1705474448141, value=15min   
+ 4                    column=fsch:dt, timestamp=1705474448121, value=10.30a.m   
+ 5                    column=finfo:dest, timestamp=1705474454923, value=istanbul
+ 5                    column=finfo:source, timestamp=1705474454899, value=dubai 
+ 5                    column=fsch:at, timestamp=1705474454941, value=5.15p.m    
+ 5                    column=fsch:delay, timestamp=1705474454978, value=8min    
+ 5                    column=fsch:dt, timestamp=1705474454959, value=7.00p.m    
+5 row(s) in 0.0700 seconds
+
+hbase(main):039:0> create 'tb1','cf'
+0 row(s) in 0.1780 seconds
+
+=> Hbase::Table - tb1
+hbase(main):040:0> list
+TABLE                                                                           
+flight                                                                          
+tb1                                                                             
+2 row(s) in 0.0090 seconds
+
+=> ["flight", "tb1"]
+hbase(main):041:0> drop 'tb1'
+
+ERROR: Table tb1 is enabled. Disable it first.'
+
+Here is some help for this command:
+Drop the named table. Table must first be disabled:
+  hbase> drop 't1'
+  hbase> drop 'ns1:t1'
+
+
+hbase(main):042:0> drop 't1'
+
+ERROR: Table t1 does not exist.'
+
+Here is some help for this command:
+Drop the named table. Table must first be disabled:
+  hbase> drop 't1'
+  hbase> drop 'ns1:t1'
+
+
+hbase(main):043:0> drop 't1'
+
+ERROR: Table t1 does not exist.'
+
+Here is some help for this command:
+Drop the named table. Table must first be disabled:
+  hbase> drop 't1'
+  hbase> drop 'ns1:t1'
+
+
+hbase(main):044:0> drop 'ns1:t1'
+
+ERROR: Table ns1:t1 does not exist.'
+
+Here is some help for this command:
+Drop the named table. Table must first be disabled:
+  hbase> drop 't1'
+  hbase> drop 'ns1:t1'
+
+
+
+hbase(main):045:0> disable 'tb1'
+0 row(s) in 1.2930 seconds
+
+hbase(main):046:0> drop 'tb1'
+0 row(s) in 0.2150 seconds
+
+hbase(main):047:0> list
+TABLE                                                                           
+flight                                                                          
+1 row(s) in 0.0060 seconds
+
+=> ["flight"]
+hbase(main):048:0> get 'flight',1
+COLUMN                CELL                                                      
+ finfo:dest           timestamp=1705473751059, value=pune                       
+ finfo:source         timestamp=1705473742664, value=nashik                     
+ fsch:at              timestamp=1705473799668, value=11.00a.m                   
+ fsch:delay           timestamp=1705473707175, value=5min                       
+ fsch:dt              timestamp=1705473829128, value=12.25a.m                   
+5 row(s) in 0.0250 seconds
+
+hbase(main):049:0>  get 'flight','1',COLUMN=>'finfo:source'
+COLUMN                CELL                                                      
+ finfo:source         timestamp=1705473742664, value=nashik                     
+1 row(s) in 0.0290 seconds
+
+hbase(main):050:0> scan 'flight',COLUMNS=>'finfo:source'
+ROW                   COLUMN+CELL                                               
+ 1                    column=finfo:source, timestamp=1705473742664, value=nashik
+ 2                    column=finfo:source, timestamp=1705474425111, value=new yo
+                      rk                                                        
+ 3                    column=finfo:source, timestamp=1705474437379, value=london
+ 4                    column=finfo:source, timestamp=1705474448056, value=tokyo 
+ 5                    column=finfo:source, timestamp=1705474454899, value=dubai 
+5 row(s) in 0.0200 seconds
+
+hbase(main):051:0>
