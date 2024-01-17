@@ -1,0 +1,20 @@
+[cloudera@quickstart Desktop]$ hive shell
+
+Logging initialized using configuration in file:/etc/hive/conf.dist/hive-log4j.properties
+WARNING: Hive CLI is deprecated and migration to Beeline is recommended.
+hive> create external table empdata2 ( ename string, esal int)
+    > ;
+OK
+Time taken: 2.476 seconds
+hive> LOAD DATA LOCAL INPATH '/home/hduser/Desktop/empdata2' INTO TABLE empdata2;
+FAILED: SemanticException Line 1:23 Invalid path ''/home/hduser/Desktop/empdata2'': No files matching path file:/home/hduser/Desktop/empdata2
+hive> LOAD DATA LOCAL INPATH '/home/hduser/Desktop/empdata2' INTO TABLE empdata2;     LOAD DATA LOCAL INPATH '/home/hduser/Desktop/empdata2' INTO TABLE empdata2;[cloudera@quickstart Desktop]$ ^C
+[cloudera@quickstart Desktop]$ hive shell
+
+Logging initialized using configuration in file:/etc/hive/conf.dist/hive-log4j.properties
+WARNING: Hive CLI is deprecated and migration to Beeline is recommended.
+hive> LOAD DATA LOCAL INPATH '/home/cloudera/Desktop/empdata2' INTO TABLE empdata2;
+Loading data to table default.empdata2
+Table default.empdata2 stats: [numFiles=1, totalSize=50]
+OK
+Time taken: 1.285 seconds
