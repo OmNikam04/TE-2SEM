@@ -1,0 +1,100 @@
+<!-- userlist.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User List</title>
+  <script src="index.js" defer></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #0ebbff;
+      margin: 20px;
+    }
+
+    h2 {
+      color: #ffffff;
+    }
+    .main-heading{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 60px;
+    }
+    ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap; /* Add flex-wrap to allow items to wrap to the next line */
+    justify-content: center;
+    gap: 30px;
+  }
+
+  li {
+    background-color: #fff;
+    border: 1px solid #ffffff;
+    margin-bottom: 10px;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: calc(25% - 30px); /* Set width to 25% of the container with some spacing */
+    font-size: large;
+    
+  }
+
+    li:hover {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transform: scale(1.1);
+      transition-duration: 0.4s;
+    }
+
+    span.label {
+      font-weight: bold;
+    }
+
+    span.value {
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <script>
+    function displayDataList() {
+      // Retrieve the user registration data from local storage
+      const userData = JSON.parse(localStorage.getItem('userData')) || [];
+
+      // Create a new HTML page to display the list
+      const userListHTML = userData.map((user, index) => createUserHTML(user, index)).join('');
+      const userListContainer = document.createElement('div');
+      userListContainer.innerHTML = `<h2 class="main-heading">Users List</h2><ul>${userListHTML}</ul>`;
+      document.body.appendChild(userListContainer);
+    }
+
+    function createUserHTML(user, index) {
+      return `
+        <li>
+          <span class="label">Full Name:</span>
+          <span class="value">${user.fullName}</span><br>
+          
+          <span class="label">Email:</span>
+          <span class="value">${user.email}</span><br>
+          
+          <span class="label">Phone Number:</span>
+          <span class="value">${user.phoneNumber}</span><br>
+          
+          <span class="label">Birth Date:</span>
+          <span class="value">${user.birthDate}</span><br>
+          
+          <span class="label">Gender:</span>
+          <span class="value">${user.gender}</span><br>
+          
+          <span class="label">Address:</span>
+          <span class="value">${user.address.streetAddress}, ${user.address.city}, ${user.address.region}, ${user.address.country}, ${user.address.postalCode}</span>
+        </li>
+      `;
+    }
+  </script>
+</body>
+</html>

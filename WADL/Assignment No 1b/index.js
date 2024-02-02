@@ -1,4 +1,5 @@
 function validateForm() {
+
     // Validation logic
     let fullName = document.getElementById('fullName').value;
     let email = document.getElementById('email').value;
@@ -35,6 +36,11 @@ function validateForm() {
       fullNameError.textContent = 'Please enter your full name.';
       return;
     }
+
+    if (password !== confirmPassword){
+      confirmPasswordError.textContent = "Password doesn't match";
+      return;
+    }
   
     // Add email validation
     if (!isValidEmail(email)) {
@@ -54,8 +60,6 @@ function validateForm() {
       birthDateError.textContent = 'Birth year must be 2004 or earlier.';
       return;
     }
-  
-    // ... (add similar validations for other fields) ...
   
     // Create a JSON object
     let formData = {
@@ -77,9 +81,14 @@ function validateForm() {
     // Log or send formData to the server/database as needed
     console.log(formData);
     // You can send formData to the server using an AJAX request or any other method.
-  
-    // Additional logic or redirection can be added here
-  }
+    const userData = JSON.parse(localStorage.getItem('userData')) || [];
+    userData.push(formData);
+
+    // Save the updated user data back to local storage
+    localStorage.setItem('userData', JSON.stringify(userData));
+  window.location.href = "users.html";
+}
+displayDataList();
   
   // Additional function for email validation
   function isValidEmail(email) {
